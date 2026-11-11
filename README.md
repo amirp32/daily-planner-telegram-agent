@@ -115,17 +115,6 @@ Tests execute the JavaScript extracted directly from the workflow against synthe
 
 See [validation status](docs/VALIDATION.md), [manual test scenarios](docs/DEMO.md), and [engineering case study](docs/CASE_STUDY.md).
 
-## Known limits
-- This export is the supplied educational template, not a fresh export of the user's configured running instance. Credentials are placeholders and no live services were called for this package.
-- Updates are acknowledged **before** AI interpretation and persistence. A downstream failure may consume a message without saving its tasks.
-- Several messages in a polling batch are joined into one prompt. Mixed requests are forced into one action; duplicate messages can create duplicate tasks.
-- There is no durable deduplication, transactional write-and-reply operation, retry queue, or multi-user isolation.
-- Task completion is limited to today's retrieved IDs. There is no edit/delete action or weekly report.
-- The model's reply is not recomputed after field normalization; it may describe details that differ from the validated payload.
-- HTTP error payloads have fallbacks, but network timeouts may stop execution before those fallbacks.
-- Owner-chat filtering is not an application authentication system. Empty-ID setup mode can reply with the first sender's chat ID; set the intended owner ID before leaving it running.
-- The Telegram token is configured inside the workflow. Keep a clean public export and avoid exposing configured tokens or execution data.
-
 ## Next engineering improvements
 Add durable update tracking and replay, deduplicate task creation, process separate messages independently, make timezones configurable in one place, and add live integration checks with a documented n8n version.
 
