@@ -1,0 +1,13 @@
+{
+  "name": "daily-planner-telegram-agent",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Offline validation of JavaScript embedded in an educational n8n Daily Planner workflow",
+  "scripts": {
+    "test": "node --test tests/workflow.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
+

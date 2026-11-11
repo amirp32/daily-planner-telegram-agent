@@ -1,0 +1,1239 @@
+{
+  "name": "AI Lab — Daily Planner Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "736de9e6-275d-4f41-a6f7-c473593d7f4d",
+      "name": "Every minute",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "id": "8f25f5e4-8e0d-49a3-b7c4-03b6ce0fc5e5",
+      "name": "Morning check-in",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 21,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "id": "64d6d480-98e8-4021-baab-dde29e10b2fe",
+      "name": "Evening report",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        740
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b5f1467c-2a6b-4704-bdc9-22ff685542e3",
+              "name": "bot_token",
+              "value": "PASTE_YOUR_TELEGRAM_BOT_TOKEN",
+              "type": "string"
+            },
+            {
+              "id": "c59d7731-d78b-4075-89b4-e2637b66358b",
+              "name": "my_chat_id",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "dd786f72-b164-4555-930b-0fe876a1583b",
+              "name": "model",
+              "value": "openrouter/free",
+              "type": "string"
+            },
+            {
+              "id": "9616bbcb-0918-4c52-8ebd-b19c27ebe1ea",
+              "name": "ai_url",
+              "value": "https://openrouter.ai/api/v1/chat/completions",
+              "type": "string"
+            },
+            {
+              "id": "1a8580f5-ee2a-49fe-81ca-d8c41808d440",
+              "name": "daily_capacity_min",
+              "value": 360,
+              "type": "number"
+            },
+            {
+              "id": "897db05e-d44d-4fa9-a7f9-6e6fc84b4573",
+              "name": "today",
+              "value": "={{ $now.setZone('Asia/Tehran').toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "dd91a99a-7296-4764-b491-3110dcb3b67e",
+              "name": "yesterday",
+              "value": "={{ $now.setZone('Asia/Tehran').minus({ days: 1 }).toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "888cf9ff-658a-4ac6-8377-52f7cce8e1e9",
+              "name": "mode",
+              "value": "={{ $('Morning check-in').isExecuted ? 'morning' : ($('Evening report').isExecuted ? 'evening' : 'poll') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "options": {}
+      },
+      "id": "9341e93c-1003-4094-b547-a9c45d600a06",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        260,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b0428ee0-cbc7-4a21-af29-0e2ca4f8343c",
+                    "leftValue": "={{ $json.mode }}",
+                    "rightValue": "poll",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "poll"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "213a41fa-81b8-4d0c-bbb1-472eb4743215",
+                    "leftValue": "={{ $json.mode }}",
+                    "rightValue": "morning",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "morning"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fdac251c-cf1b-4e4b-9dc2-d9343a5de095",
+                    "leftValue": "={{ $json.mode }}",
+                    "rightValue": "evening",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "evening"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "13e1099a-e1b5-4d4d-b2f1-9c2e70eecae6",
+      "name": "Which trigger?",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        480,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://api.telegram.org/bot' + $('Config').first().json.bot_token + '/getUpdates' }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "timeout",
+              "value": "0"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ebb13e21-bc72-4a81-bb88-e7d09d1317eb",
+      "name": "Get updates",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Read messages — reads new Telegram updates and keeps only YOUR messages\nconst cfg = $('Config').first().json;\nconst updates = $input.first().json.result || [];\n\n// No new update? Stop here (nothing below runs, no AI request is spent).\nif (updates.length === 0) return [];\n\nconst nextOffset = Math.max(...updates.map(u => u.update_id)) + 1;\nconst myId = String(cfg.my_chat_id || '').trim();\nconst msgs = updates.filter(u => u.message && u.message.text);\n\n// Setup mode: you haven't entered your chat id yet -> bot tells you what it is.\nif (!myId || myId === '0') {\n  const first = msgs[0];\n  return [{ json: {\n    kind: first ? 'setup' : 'none',\n    next_offset: nextOffset,\n    chat_id: first ? first.message.chat.id : null,\n    text: first ? `سلام! chat id تو این عدد است:\\n${first.message.chat.id}\\nاین عدد را در نود Config جلوی my_chat_id بگذار و ورک‌فلو را دوباره Publish کن.` : ''\n  } }];\n}\n\n// Guardrail: only messages from your own chat are processed. Others are ignored.\nconst mine = msgs.filter(u => String(u.message.chat.id) === myId);\nreturn [{ json: {\n  kind: mine.length ? 'message' : 'none',\n  next_offset: nextOffset,\n  text: mine.map(u => u.message.text).join('\\n')\n} }];\n"
+      },
+      "id": "4cd2aae2-34bf-4b58-825e-0c48240960f1",
+      "name": "Read messages",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        940,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://api.telegram.org/bot' + $('Config').first().json.bot_token + '/getUpdates' }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "offset",
+              "value": "={{ $json.next_offset }}"
+            },
+            {
+              "name": "timeout",
+              "value": "0"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "52fcdf75-f687-4eb5-99e0-0482e20f4f71",
+      "name": "Confirm updates",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1160,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "7286fd71-578b-4a16-abec-30d674007733",
+                    "leftValue": "={{ $('Read messages').first().json.kind }}",
+                    "rightValue": "message",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "message"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fdba84f9-3d2c-428b-b4e3-d7f8ca35bb9b",
+                    "leftValue": "={{ $('Read messages').first().json.kind }}",
+                    "rightValue": "setup",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "setup"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "321692bf-54b8-4a86-b2a7-d51acb4165f0",
+      "name": "Message type",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1380,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Setup reply — tells you your chat id\nconst r = $('Read messages').first().json;\nreturn [{ json: { chat_id: r.chat_id, text: r.text } }];"
+      },
+      "id": "ad3a80c7-1e7f-41fa-99ec-c3b5a8d99255",
+      "name": "Setup reply",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "tasks"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "date",
+              "condition": "eq",
+              "keyValue": "={{ $('Config').first().json.today }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "id": "8f16e380-4a00-40e9-890b-7b2766abe2c7",
+      "name": "Get today tasks",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1600,
+        200
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build prompt — gives the agent its role, rules, today's state and the output format\nconst cfg = $('Config').first().json;\nconst userText = $('Read messages').first().json.text;\nconst rows = $input.all().map(i => i.json).filter(r => r.id);\n\nconst taskList = rows.length\n  ? rows.map(r => `#${r.id} | ${r.title} | priority=${r.priority} | est=${r.estimate_min}min | status=${r.status}`).join('\\n')\n  : '(no tasks saved for today yet)';\n\nconst system = `You are \"Daily Planner\", a personal planning agent inside a Telegram bot.\nYou help ONE person plan their day, track tasks and see honest daily KPIs.\nAlways write the \"reply\" field in natural, friendly Persian (Farsi). Keep it short.\n\nTODAY: ${cfg.today}\nDAILY CAPACITY: ${cfg.daily_capacity_min} minutes of focused work\nTODAY'S TASKS (id | title | priority | estimate | status):\n${taskList}\n\nDecide exactly ONE action for the user's message:\n- \"add_tasks\": the user lists things they want/need to do. Extract each task.\n  priority: \"high\" (deadline today, important for others, or user says urgent), \"medium\", or \"low\".\n  estimate_min: realistic minutes. If the user gives a time, use it. Otherwise estimate (15-120).\n  In \"reply\": confirm the tasks, suggest an order (high first), and if total planned minutes\n  (existing + new) exceed DAILY CAPACITY, say so honestly and suggest what to move to tomorrow.\n- \"mark_done\": the user says something is finished. Put the matching ids in \"done_ids\".\n  ONLY use ids from TODAY'S TASKS. If nothing matches clearly, use \"chat\" and ask which one.\n- \"report\": the user asks for a report, KPI, summary, or how the day went.\n- \"chat\": anything else (questions, greetings, unclear). Answer briefly in \"reply\".\n\nRules:\n- Never invent tasks the user did not mention. Never mark tasks done the user did not mention.\n- Output ONLY one JSON object. No markdown, no code fences, no text before or after it.\n\nOutput format:\n{\"action\":\"add_tasks|mark_done|report|chat\",\"tasks\":[{\"title\":\"...\",\"priority\":\"high|medium|low\",\"estimate_min\":30}],\"done_ids\":[1],\"reply\":\"...\"}\n\nExamples:\nUser: \"امروز باید گزارش فروش رو تا ظهر بفرستم، یه ساعت هم ورزش\"\n{\"action\":\"add_tasks\",\"tasks\":[{\"title\":\"ارسال گزارش فروش\",\"priority\":\"high\",\"estimate_min\":90},{\"title\":\"ورزش\",\"priority\":\"medium\",\"estimate_min\":60}],\"done_ids\":[],\"reply\":\"ثبت شد. اول گزارش فروش (مهلتش ظهره)، بعد ورزش.\"}\nUser: \"گزارش رو فرستادم\"  (and task #3 is \"ارسال گزارش فروش\")\n{\"action\":\"mark_done\",\"tasks\":[],\"done_ids\":[3],\"reply\":\"عالی، گزارش فروش تیک خورد.\"}`;\n\nreturn [{ json: { body: {\n  model: cfg.model,\n  temperature: 0.2,\n  messages: [\n    { role: 'system', content: system },\n    { role: 'user', content: userText }\n  ]\n} } }];\n"
+      },
+      "id": "fcd7ed52-1927-4c99-b967-1af05d953168",
+      "name": "Build prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1820,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').first().json.ai_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.body) }}",
+        "options": {
+          "timeout": 90000,
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "516c2381-88a3-41ac-adda-6640a393c19e",
+      "name": "AI brain",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2040,
+        200
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "",
+          "name": "OpenRouter key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse decision — turns the model's answer into a safe, validated decision\nconst res = $input.first().json;\nconst todayIds = $('Get today tasks').all().map(i => Number(i.json.id)).filter(Boolean);\n\n// 1) The AI service returned an error (quota finished, model busy, wrong key, ...)\nif (res.error || !res.choices) {\n  const msg = (res.error && res.error.message) ? res.error.message : 'no answer';\n  return [{ json: { action: 'chat', tasks: [], done_ids: [],\n    text: `مدل هوش مصنوعی الان جواب نداد (${msg}).\\nچند دقیقه بعد دوباره پیامت را بفرست. اگر تکرار شد، بخش عیب‌یابی راهنما را ببین.` } }];\n}\n\n// 2) Pull the JSON out of the answer, even if the model added extra text around it\nconst raw = res.choices[0]?.message?.content || '';\nlet d = null;\ntry {\n  const m = raw.match(/\\{[\\s\\S]*\\}/);\n  d = JSON.parse(m ? m[0] : raw);\n} catch (e) { d = null; }\n\nif (!d || typeof d !== 'object') {\n  return [{ json: { action: 'chat', tasks: [], done_ids: [],\n    text: 'جوابم قاطی شد و نتوانستم بفهمم چه کاری باید بکنم. می‌شود پیامت را ساده‌تر بنویسی؟' } }];\n}\n\n// 3) Validate every field (guardrails): the model is not trusted blindly\nconst allowed = ['add_tasks', 'mark_done', 'report', 'chat'];\nlet action = allowed.includes(d.action) ? d.action : 'chat';\n\nconst tasks = (Array.isArray(d.tasks) ? d.tasks : [])\n  .filter(t => t && typeof t.title === 'string' && t.title.trim())\n  .slice(0, 15)\n  .map(t => ({\n    title: t.title.trim().slice(0, 200),\n    priority: ['high', 'medium', 'low'].includes(t.priority) ? t.priority : 'medium',\n    estimate_min: Math.min(Math.max(parseInt(t.estimate_min, 10) || 30, 5), 480)\n  }));\n\n// Only ids that really exist today are accepted\nconst done_ids = (Array.isArray(d.done_ids) ? d.done_ids : [])\n  .map(Number).filter(id => todayIds.includes(id));\n\nlet text = (typeof d.reply === 'string' && d.reply.trim()) ? d.reply.trim() : 'باشه.';\nif (action === 'add_tasks' && tasks.length === 0) {\n  action = 'chat'; text = 'کاری برای ثبت پیدا نکردم. کارهایت را واضح‌تر بنویس، مثلاً: «امروز باید گزارش را بفرستم و ورزش کنم».';\n}\nif (action === 'mark_done' && done_ids.length === 0) {\n  action = 'chat'; text = 'نفهمیدم کدام کار تمام شده. اسم کار را دقیق‌تر بنویس (اول یک «گزارش» بگیر تا فهرست امروز را ببینی).';\n}\nreturn [{ json: { action, tasks, done_ids, text } }];\n"
+      },
+      "id": "ca28c5f4-c353-4494-aa0d-cd6c4392e4aa",
+      "name": "Parse decision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2260,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "22aa63bf-a5eb-485a-be46-0276bb37505f",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "add_tasks",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "add_tasks"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4cc1becd-28c3-44d0-bd06-e1015ff4e365",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "mark_done",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "mark_done"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "12e7bf33-75ae-4f76-8501-a23a832f621c",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "report",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "report"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "308ce57c-7550-414a-91b4-0ea2dff15a7b",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "chat",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "chat"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2a034d3b-bd14-4664-9060-11c323a4fce0",
+      "name": "Route action",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2480,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Split tasks — one item per task, ready to be saved as a row\nconst cfg = $('Config').first().json;\nreturn $input.first().json.tasks.map(t => ({ json: {\n  date: cfg.today,\n  title: t.title,\n  priority: t.priority,\n  estimate_min: t.estimate_min,\n  status: 'todo',\n  done_at: ''\n} }));\n"
+      },
+      "id": "4b321799-6d39-4484-8302-10992868ea56",
+      "name": "Split tasks",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2720,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "tasks"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "486059f6-1000-4941-8a31-4bf3e8f8a8f4",
+      "name": "Save tasks",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2940,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Split done ids — one item per finished task\nconst now = $now.setZone('Asia/Tehran').toFormat('yyyy-MM-dd HH:mm');\nreturn $input.first().json.done_ids.map(id => ({ json: { id, status: 'done', done_at: now } }));"
+      },
+      "id": "f8aa3447-1028-43a8-a81c-646b200c6ecd",
+      "name": "Split done ids",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2720,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "tasks"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "8644ea84-49f0-4c77-968e-6a13edde66e6",
+      "name": "Mark done",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2940,
+        200
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Reply text — after saving, send the agent's reply once\nreturn [{ json: { text: $('Parse decision').first().json.text } }];\n"
+      },
+      "id": "b3ba58b6-0435-4cb7-9dd0-c0fdbc86afd9",
+      "name": "Reply text",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3160,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "tasks"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "date",
+              "condition": "eq",
+              "keyValue": "={{ $('Config').first().json.today }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "id": "0b6a99bd-da5d-494f-be59-d094a8d0359d",
+      "name": "Get tasks for report",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2720,
+        620
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Calculate KPI — numbers are computed with code, not by the AI (AI is bad at arithmetic)\nconst cfg = $('Config').first().json;\nconst rows = $input.all().map(i => i.json).filter(r => r.id);\nconst W = { high: 3, medium: 2, low: 1 };\n\nconst total = rows.length;\nconst done = rows.filter(r => r.status === 'done');\nconst high = rows.filter(r => r.priority === 'high');\nconst highDone = high.filter(r => r.status === 'done');\nconst sum = arr => arr.reduce((s, r) => s + (Number(r.estimate_min) || 0), 0);\nconst pct = (a, b) => (b ? Math.round((a / b) * 100) : 0);\n\nconst plannedMin = sum(rows);\nconst doneMin = sum(done);\nconst weightAll = rows.reduce((s, r) => s + (W[r.priority] || 2), 0);\nconst weightDone = done.reduce((s, r) => s + (W[r.priority] || 2), 0);\n\nconst kpi = {\n  date: cfg.today,\n  total_tasks: total,\n  done_tasks: done.length,\n  completion_rate: pct(done.length, total),\n  high_priority_rate: high.length ? pct(highDone.length, high.length) : null,\n  planned_min: plannedMin,\n  done_min: doneMin,\n  capacity_min: Number(cfg.daily_capacity_min),\n  planning_accuracy: plannedMin ? pct(Math.min(plannedMin, cfg.daily_capacity_min), plannedMin) : null,\n  day_score: pct(weightDone, weightAll),\n  open_tasks: rows.filter(r => r.status !== 'done').map(r => r.title)\n};\n\nlet text;\nif (total === 0) {\n  text = `📊 گزارش ${kpi.date}\\nامروز هیچ کاری ثبت نشده بود. فردا صبح کارهایت را برایم بفرست تا گزارش واقعی داشته باشیم.`;\n} else {\n  text = [\n    `📊 گزارش ${kpi.date}`,\n    `امتیاز روز (وزن‌دار با اولویت): ${kpi.day_score}٪`,\n    `نرخ انجام: ${kpi.done_tasks} از ${kpi.total_tasks} کار (${kpi.completion_rate}٪)`,\n    `کارهای اولویت بالا: ${kpi.high_priority_rate === null ? 'نداشتی' : kpi.high_priority_rate + '٪ انجام شد'}`,\n    `زمان برنامه‌ریزی‌شده: ${kpi.planned_min} دقیقه (ظرفیت: ${kpi.capacity_min})`,\n    `زمان کارهای انجام‌شده: ${kpi.done_min} دقیقه`,\n    `واقع‌بینی برنامه: ${kpi.planning_accuracy}٪`,\n    kpi.open_tasks.length ? `باز مانده: ${kpi.open_tasks.join('، ')}` : 'هیچ کاری باز نمانده.'\n  ].join('\\n');\n}\n\nreturn [{ json: { kpi, text, coach_body: {\n  model: cfg.model,\n  temperature: 0.4,\n  messages: [\n    { role: 'system', content: 'You are a calm, honest productivity coach. Read the KPI JSON and write exactly 3 short lines in Persian (Farsi): 1) one real positive point, 2) one pattern or problem you see in the numbers, 3) one concrete, small suggestion for tomorrow. No exaggeration, no emojis, no headings.' },\n    { role: 'user', content: JSON.stringify(kpi) }\n  ]\n} } }];\n"
+      },
+      "id": "d9cde251-f769-476b-8371-e06187d0212c",
+      "name": "Calculate KPI",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2940,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').first().json.ai_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.coach_body) }}",
+        "options": {
+          "timeout": 90000,
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "ed069732-d0ab-47b6-8f53-256c28a57337",
+      "name": "AI coach",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3160,
+        620
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "",
+          "name": "OpenRouter key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Compose report — KPI numbers + coach advice (if the AI answered)\nconst base = $('Calculate KPI').first().json;\nconst res = $input.first().json;\nconst advice = res && res.choices ? (res.choices[0]?.message?.content || '').trim() : '';\nconst text = (base.kpi.total_tasks > 0 && advice)\n  ? `${base.text}\\n\\n🧭 نکته‌های مربی:\\n${advice}`\n  : base.text;\nreturn [{ json: { text } }];\n"
+      },
+      "id": "bd153f2d-f5a3-410e-b738-0604eee38f01",
+      "name": "Compose report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3380,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "tasks"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "date",
+              "condition": "eq",
+              "keyValue": "={{ $('Config').first().json.yesterday }}"
+            },
+            {
+              "keyName": "status",
+              "condition": "eq",
+              "keyValue": "todo"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "id": "8ffe7401-7ee7-425f-b186-aeae5ddd28b0",
+      "name": "Get yesterday open tasks",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        820
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Morning message — check-in + yesterday's unfinished tasks\nconst open = $input.all().map(i => i.json).filter(r => r.id);\nlet text = 'صبح بخیر! کارهای امروزت را در یک پیام برایم بنویس (هر طور راحتی، لازم نیست مرتب باشد).';\nif (open.length) {\n  text += '\\n\\nاز دیروز این‌ها باز مانده:\\n' + open.map(r => `• ${r.title}`).join('\\n') +\n          '\\nاگر هنوز لازم‌اند، در پیامت دوباره بنویسشان.';\n}\nreturn [{ json: { text } }];\n"
+      },
+      "id": "1a56de2a-448d-4224-8826-e7a93047ff20",
+      "name": "Morning message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        940,
+        820
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://api.telegram.org/bot' + $('Config').first().json.bot_token + '/sendMessage' }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ chat_id: $json.chat_id || $('Config').first().json.my_chat_id, text: $json.text }) }}",
+        "options": {}
+      },
+      "id": "29101e73-c0ba-4f62-acc8-e699a3aa546e",
+      "name": "Send to Telegram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3640,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## ۱. تنظیمات\nفقط نود **Config** را پر کن:\n- bot_token: توکن BotFather\n- my_chat_id: بار اول خالی بگذار؛ ربات خودش chat id را برایت می‌فرستد\n- model و ai_url: مغز ایجنت (برای عوض کردن مدل فقط همین دو خط)",
+        "height": 280,
+        "width": 640,
+        "color": 5
+      },
+      "id": "c7763bb3-c5a5-4c21-a32e-67c172f39eef",
+      "name": "Note f6573a",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        -40
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## ۲. ببین\nهر دقیقه پیام‌های جدید تلگرام را برمی‌دارد، فقط پیام‌های خودت را نگه می‌دارد و به تلگرام می‌گوید «این‌ها را دیدم».",
+        "height": 200,
+        "width": 760,
+        "color": 7
+      },
+      "id": "7a9d6629-2309-41aa-9b6c-4d7e2d8c75ac",
+      "name": "Note 4f5ba4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        680,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## ۳. فکر کن (مغز + حافظه)\nکارهای امروز از جدول خوانده می‌شود، پرامپت ساخته می‌شود و مدل تصمیم می‌گیرد. Parse decision خروجی مدل را چک می‌کند (گاردریل).",
+        "height": 200,
+        "width": 900,
+        "color": 4
+      },
+      "id": "3527e1e0-9d99-4eea-b0df-653f35746a64",
+      "name": "Note 325528",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1560,
+        -40
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## ۴. عمل کن\nثبت کار، تیک زدن، گزارش یا گپ. KPI را کد حساب می‌کند، نه مدل.",
+        "height": 180,
+        "width": 760,
+        "color": 6
+      },
+      "id": "e84b6efb-176a-42f0-80c3-0c222eeb9a6a",
+      "name": "Note 6f8a5e",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2680,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## ۵. خودکار\nصبح ۸:۳۰ یادآوری کارهای باز دیروز؛ شب ۲۱:۳۰ گزارش روز.",
+        "height": 140,
+        "width": 560,
+        "color": 3
+      },
+      "id": "f61d7e70-4b61-4208-92f8-19c58ff874e1",
+      "name": "Note c55c93",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        680,
+        980
+      ]
+    }
+  ],
+  "connections": {
+    "Every minute": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Morning check-in": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evening report": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Which trigger?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Which trigger?": {
+      "main": [
+        [
+          {
+            "node": "Get updates",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get yesterday open tasks",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get tasks for report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get updates": {
+      "main": [
+        [
+          {
+            "node": "Read messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read messages": {
+      "main": [
+        [
+          {
+            "node": "Confirm updates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm updates": {
+      "main": [
+        [
+          {
+            "node": "Message type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message type": {
+      "main": [
+        [
+          {
+            "node": "Get today tasks",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Setup reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get today tasks": {
+      "main": [
+        [
+          {
+            "node": "Build prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build prompt": {
+      "main": [
+        [
+          {
+            "node": "AI brain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI brain": {
+      "main": [
+        [
+          {
+            "node": "Parse decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse decision": {
+      "main": [
+        [
+          {
+            "node": "Route action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route action": {
+      "main": [
+        [
+          {
+            "node": "Split tasks",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Split done ids",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get tasks for report",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split tasks": {
+      "main": [
+        [
+          {
+            "node": "Save tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split done ids": {
+      "main": [
+        [
+          {
+            "node": "Mark done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save tasks": {
+      "main": [
+        [
+          {
+            "node": "Reply text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark done": {
+      "main": [
+        [
+          {
+            "node": "Reply text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get tasks for report": {
+      "main": [
+        [
+          {
+            "node": "Calculate KPI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate KPI": {
+      "main": [
+        [
+          {
+            "node": "AI coach",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI coach": {
+      "main": [
+        [
+          {
+            "node": "Compose report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get yesterday open tasks": {
+      "main": [
+        [
+          {
+            "node": "Morning message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply text": {
+      "main": [
+        [
+          {
+            "node": "Send to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compose report": {
+      "main": [
+        [
+          {
+            "node": "Send to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Morning message": {
+      "main": [
+        [
+          {
+            "node": "Send to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup reply": {
+      "main": [
+        [
+          {
+            "node": "Send to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Tehran",
+    "saveManualExecutions": true
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}
