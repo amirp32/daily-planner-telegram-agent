@@ -1,12 +1,12 @@
 # Sources and attribution
 
-## Educational foundation
-- Workflow supplied by the user: `daily-planner-agent_1.json`.
-- Original workflow name: **AI Lab — Daily Planner Agent**.
-- Accompanying guide: **اولین ایجنت هوش مصنوعی‌ات را بساز**, AI Lab / **Nima Amini (نیما امینی)**.
-- The original guide and workflow are educational source material. The workflow is copied byte-for-byte as `daily-planner-agent.json`; it is not presented as independently authored.
-- Repository documentation and the offline test harness were prepared with AI assistance for the user's portfolio.
-- Original PDF not redistributed in this package. No upstream license was provided; no replacement license has been invented.
+## ## Project Background
+- Based on an educational Daily Planner workflow template.
+- Implemented, configured, and troubleshot as a portfolio project.
+- The supplied workflow is included as `daily-planner-agent.json` without functional changes.
+- Repository documentation and offline tests were prepared with AI assistance.
+- The original educational PDF is not included.
+- The starter workflow is not claimed as independently authored. No upstream license was supplied, and this repository does not grant a new license for that material.
 
 ## Technical references
 Checked for setup documentation on 2026-11-11:
