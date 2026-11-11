@@ -1,3 +1,7 @@
+
+
+https://github.com/user-attachments/assets/1f3b7218-e4ae-4a24-8ffc-361fb9d15b55
+
 # Daily Planner — Telegram AI Workflow
 **Turn everyday Persian messages into structured tasks, completion updates, and daily KPI reports.**
 
