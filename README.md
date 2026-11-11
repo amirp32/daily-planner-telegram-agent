@@ -129,5 +129,3 @@ Add durable update tracking and replay, deduplicate task creation, process separ
 | `docs/LINKEDIN.md` | Post and LinkedIn project-field drafts |
 | `docs/VALIDATION.md` | Verified scope and outstanding checks |
 
-No real credentials, task-table export, or original course PDF are bundled. The demo video contains user-supplied Telegram conversation history. No upstream license was supplied, so this package does not grant a new license for the educational workflow. Retain attribution and establish the applicable redistribution terms before publishing that source.
-
