@@ -35,7 +35,7 @@ I configured and troubleshot an educational starter workflow in n8n, connected T
 
 A task-creation run was reported successful: two tasks were saved and a Telegram confirmation arrived. That observation does not establish that every action and scheduled branch has been tested.
 
-The original workflow and learning material are by **AI Lab / Nima Amini**. This repository documents my implementation experience and adds setup instructions, an architecture explanation, a failure analysis, offline logic tests, and a repeatable demo plan. It does not claim original authorship of the starter. See [project provenance](SOURCES.md).
+The original workflow and learning material are by **Amir pofazh**. This repository documents my implementation experience and adds setup instructions, an architecture explanation, a failure analysis, offline logic tests, and a repeatable demo plan. It does not claim original authorship of the starter. See [project provenance](SOURCES.md).
 
 ## Capabilities in the supplied workflow
 | Capability | Behavior |
